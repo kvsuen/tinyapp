@@ -10,6 +10,26 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const generateRandomString = function() {
+  const result = [];
+  const keys = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+
+  while (result.length < 6) {
+    const randomNum = Math.floor(Math.random() * keys.length);
+    const randomNumCase = Math.floor(Math.random() * 2);
+
+    let char = keys[randomNum];
+    if (typeof char === 'string') {
+      if (randomNumCase === 1) {
+        char = char.toUpperCase();
+      }
+    }
+    result.push(char);
+  }
+
+  return result.join('');
+};
+
 // ### Middleware ###
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -26,9 +46,15 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
 app.get("/urls/new", (req, res) => {

@@ -7,7 +7,7 @@ app.set("view engine", "ejs");
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "9sm5xK": "http://www.google.com",
 };
 
 const generateRandomString = function() {
@@ -31,6 +31,7 @@ const generateRandomString = function() {
 };
 
 // ### Middleware ###
+// converts post buffer from client into string we can read
 app.use(bodyParser.urlencoded({extended: true}));
 
 // ### Views to Render ###
@@ -52,6 +53,8 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// receieve post data from submit button
+// generate new shortURL and redirect to show short/long URLS
 app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
   let shortUrl = generateRandomString();
@@ -59,15 +62,18 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortUrl}`);
 });
 
+// to create new shortURL for a longURL
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+// shows the shortURL & longURL data
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
 
+// redirect shortURL to longURL
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);

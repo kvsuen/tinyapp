@@ -11,7 +11,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
-const users = { 
+const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
@@ -135,17 +135,32 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
+const emailExists = function(email) {
+  for (const user in users) {
+    if (users.hasOwnProperty(user)) {
+      if (users[user].email === email) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
 // registration handler
 app.post("/register", (req, res) => {
-  const randomId = generateRandomString();
-  users[randomId] = {
-    id: randomId,
-    email: req.body.email,
-    password: req.body.password,
-  };
-  console.log(users);
-  res.cookie("user_id", randomId);
-  res.redirect("/urls");
+  if (req.body.email === "" || req.body.password === "" || emailExists(req.body.email)) {
+    res.status(400).send('Uh oh, something went wrong with the registration, try again.');
+  } else {
+    const randomId = generateRandomString();
+    users[randomId] = {
+      id: randomId,
+      email: req.body.email,
+      password: req.body.password,
+    };
+    console.log(users);
+    res.cookie("user_id", randomId);
+    res.redirect("/urls");
+  }
 });
 
 // ### Server listen ###

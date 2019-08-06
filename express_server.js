@@ -176,10 +176,38 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 });
 
+// helper function to find id of user depending on email
+const findId = function(email) {
+  for (const user in users) {
+    if (users.hasOwnProperty(user)) {
+      if (Object.values(users[user]).includes(email)) {
+        return users[user].id;
+      }
+    }
+  }
+  return undefined;
+};
+
+// helper function to check if password is correct
+const correctPassword = function(email, password) {
+  if (users[findId(email)].password === password) {
+    return true;
+  }
+  return false;
+};
+
 // login handler
 app.post("/login", (req, res) => {
-  res.cookie("user_id", req.body.email);
-  res.redirect("/urls");
+  if (req.body.email === "" || req.body.password === "" || !emailExists(req.body.email)) {
+    res.status(403).send('Uh oh, something went wrong, try again.');
+  } else if (emailExists(req.body.email)) {
+    if (correctPassword(req.body.email, req.body.password)) {
+      res.cookie("user_id", findId(req.body.email));
+      res.redirect("/urls");
+    } else {
+      res.status(403).send('Wrong password.');
+    }
+  }
 });
 
 // ### Server listen ###

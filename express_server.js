@@ -19,10 +19,8 @@ const generateRandomString = function() {
     const randomNumCase = Math.floor(Math.random() * 2);
 
     let char = keys[randomNum];
-    if (typeof char === 'string') {
-      if (randomNumCase === 1) {
-        char = char.toUpperCase();
-      }
+    if (typeof char === 'string' && randomNumCase === 1) {
+      char = char.toUpperCase();
     }
     result.push(char);
   }

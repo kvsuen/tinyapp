@@ -14,7 +14,7 @@ const PORT = 8080; // default port 8080
 app.set('view engine', 'ejs');
 
 const urlDatabase = {
-  b2xVn2: 'http://www.lighthouselabs.ca',
+  'b2xVn2': 'http://www.lighthouselabs.ca',
   '9sm5xK': 'http://www.google.com'
 };
 
@@ -68,7 +68,11 @@ app.get('/urls/new', (req, res) => {
   const templateVars = {
     username: users[req.cookies['user_id']]
   };
-  res.render('urls_new', templateVars);
+  if (templateVars.username) {
+    res.render('urls_new', templateVars);
+  } else {
+    res.redirect('/login');
+  }
 });
 
 // shows the shortURL & longURL data

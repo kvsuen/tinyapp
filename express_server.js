@@ -135,6 +135,7 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
+// helper function to help check duplicate emails in registration
 const emailExists = function(email) {
   for (const user in users) {
     if (users.hasOwnProperty(user)) {
@@ -157,10 +158,23 @@ app.post("/register", (req, res) => {
       email: req.body.email,
       password: req.body.password,
     };
-    console.log(users);
     res.cookie("user_id", randomId);
     res.redirect("/urls");
   }
+});
+
+// login page
+app.get("/login", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+  };
+  res.render("login", templateVars);
+});
+
+// login handler
+app.post("/login", (req, res) => {
+  res.cookie("user_id", randomId);
+  res.redirect("/urls");
 });
 
 // ### Server listen ###

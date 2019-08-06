@@ -15,10 +15,10 @@
         <button type="submit" class="btn btn-outline-secondary">Log out</button>
       </form>
         <% } else { %>
-      <form class="form-inline" action="/login" method="POST">
-        <input class="form-control" type="text" name="username" placeholder="Username" style="margin-right: 1em">
-        <button type="submit" class="btn btn-outline-secondary">Sign in</button>
-      </form>
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="/login">Login</a>
+          <a class="nav-item nav-link" href="/register">Register</a>
+        </div>
       <% } %>
       </div>
     </div>

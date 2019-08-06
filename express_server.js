@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -19,18 +20,19 @@ const generateRandomString = function() {
     const randomNumCase = Math.floor(Math.random() * 2);
 
     let char = keys[randomNum];
-    if (typeof char === 'string' && randomNumCase === 1) {
+    if (typeof char === "string" && randomNumCase === 1) {
       char = char.toUpperCase();
     }
     result.push(char);
   }
 
-  return result.join('');
+  return result.join("");
 };
 
 // ### Middleware ###
 // converts post buffer from client into string we can read
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 // ### Views to Render ###
 app.get("/", (req, res) => {
@@ -88,6 +90,12 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
+});
+
+// login feature
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect("/urls");
 });
 
 // ### Server listen ###

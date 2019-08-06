@@ -49,7 +49,10 @@ app.get("/hello", (req, res) => {
 
 // ### Real views below ###
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"],
+  };
   res.render("urls_index", templateVars);
 });
 
@@ -77,12 +80,19 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // to create new shortURL for a longURL
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies["username"],
+  };
+  res.render("urls_new", templateVars);
 });
 
 // shows the shortURL & longURL data
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  let templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies["username"],
+  };
   res.render("urls_show", templateVars);
 });
 

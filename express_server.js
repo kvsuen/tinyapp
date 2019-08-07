@@ -21,7 +21,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
   name: 'session',
-  keys: ['key1', 'key2'],
+  keys: ['aZkas1', 'gTkas2'],
   // cookie options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));

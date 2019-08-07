@@ -2,15 +2,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+const urlDatabase = require('./urlDatabase');
 const {
-  users,
-  urlDatabase,
   generateRandomString,
   emailExists,
-  findId,
+  findUserId,
   correctPassword,
   urlsForUser,
 } = require('./helpers');
+
+const users = {};
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -39,7 +40,7 @@ app.get('/urls.json', (req, res) => {
 // ### Real views below ###
 app.get('/urls', (req, res) => {
   // filter out urls list to only show users own urls per user_id
-  const filteredURLbyID = urlsForUser(req.session.user_id);
+  const filteredURLbyID = urlsForUser(req.session.user_id, urlDatabase);
   const templateVars = {
     urls: filteredURLbyID,
     username: users[req.session.user_id]
@@ -60,7 +61,7 @@ app.post('/urls', (req, res) => {
 
 // edit longURL
 app.post('/urls/:shortURL', (req, res) => {
-  if (urlsForUser(req.session.user_id)[req.params.shortURL]) {
+  if (urlsForUser(req.session.user_id, urlDatabase)[req.params.shortURL]) {
     urlDatabase[req.params.shortURL].longURL = req.body.longURL;
     res.redirect(`/urls`);
   } else {
@@ -70,7 +71,7 @@ app.post('/urls/:shortURL', (req, res) => {
 
 // delete shortURL entry
 app.post('/urls/:shortURL/delete', (req, res) => {
-  if (urlsForUser(req.session.user_id)[req.params.shortURL]) {
+  if (urlsForUser(req.session.user_id, urlDatabase)[req.params.shortURL]) {
     delete urlDatabase[req.params.shortURL];
     res.redirect(`/urls`);
   } else {
@@ -98,7 +99,7 @@ app.get('/urls/:shortURL', (req, res) => {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
       username: users[userCookie],
-      urlsList: urlsForUser(userCookie),
+      urlsList: urlsForUser(userCookie, urlDatabase),
     };
     res.render('urls_show', templateVars);
   } else {
@@ -125,7 +126,7 @@ app.post('/register', (req, res) => {
   if (
     req.body.email === '' ||
     req.body.password === '' ||
-    emailExists(req.body.email)
+    emailExists(req.body.email, users)
   ) {
     res
       .status(400)
@@ -138,6 +139,7 @@ app.post('/register', (req, res) => {
       password: bcrypt.hashSync(req.body.password, 10)
     };
     req.session.user_id = randomId;
+    console.log(users);
     res.redirect('/urls');
   }
 });
@@ -155,12 +157,12 @@ app.post('/login', (req, res) => {
   if (
     req.body.email === ''
     || req.body.password === ''
-    || !emailExists(req.body.email)
+    || !emailExists(req.body.email, users)
   ) {
     res.status(403).send('Uh oh, something went wrong, try again.');
-  } else if (emailExists(req.body.email)) {
-    if (correctPassword(req.body.email, req.body.password)) {
-      req.session.user_id = findId(req.body.email);
+  } else if (emailExists(req.body.email, users)) {
+    if (correctPassword(req.body.email, req.body.password, users)) {
+      req.session.user_id = findUserId(req.body.email, users);
       res.redirect('/urls');
     } else {
       res.status(403).send('Wrong password.');

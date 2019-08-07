@@ -1,5 +1,3 @@
-const users = require('./users');
-const urlDatabase = require('./urlDatabase');
 const bcrypt = require('bcrypt');
 
 const generateRandomString = function() {
@@ -21,7 +19,7 @@ const generateRandomString = function() {
 };
 
 // helper function to help check duplicate emails in registration
-const emailExists = function(email) {
+const emailExists = function(email, users) {
   for (const user in users) {
     if (users.hasOwnProperty(user)) {
       if (users[user].email === email) {
@@ -33,7 +31,7 @@ const emailExists = function(email) {
 };
 
 // helper function to find id of user depending on email
-const findId = function(email) {
+const findUserId = function(email, users) {
   for (const user in users) {
     if (users.hasOwnProperty(user)) {
       if (Object.values(users[user]).includes(email)) {
@@ -45,19 +43,19 @@ const findId = function(email) {
 };
 
 // helper function to check if password is correct
-const correctPassword = function(email, password) {
-  if (bcrypt.compareSync(password, users[findId(email)].password)) {
+const correctPassword = function(email, password, users) {
+  if (bcrypt.compareSync(password, users[findUserId(email, users)].password)) {
     return true;
   }
   return false;
 };
 
 // generate object list of urls for specified user id
-const urlsForUser = function(id) {
-  const filteredObject = Object.keys(urlDatabase)
-    .filter(key => urlDatabase[key].userID === id)
+const urlsForUser = function(id, database) {
+  const filteredObject = Object.keys(database)
+    .filter(key => database[key].userID === id)
     .reduce((obj, key) => {
-      obj[key] = urlDatabase[key];
+      obj[key] = database[key];
       return obj;
     }, {});
 
@@ -65,11 +63,9 @@ const urlsForUser = function(id) {
 };
 
 module.exports = {
-  users,
-  urlDatabase,
   generateRandomString,
   emailExists,
-  findId,
+  findUserId,
   correctPassword,
   urlsForUser,
 };

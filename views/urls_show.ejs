@@ -10,6 +10,7 @@
   <% include ./partials/_header %>
 
   <main style="margin: 1em;">
+  <!-- display urls only if authorized user is logged in -->
   <% if (urlsList[shortURL]) { %>
       <div class="card text-center">
           <div class="card-header"></div>

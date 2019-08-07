@@ -2,21 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const {
+  users,
+  urlDatabase,
   generateRandomString,
   emailExists,
   findId,
   correctPassword,
-  users,
+  urlsForUser,
 } = require('./helpers');
 
 const app = express();
 const PORT = 8080; // default port 8080
 app.set('view engine', 'ejs');
-
-const urlDatabase = {
-  'b2xVn2': {longURL: 'http://www.lighthouselabs.ca', userID: 'testing'},
-  '9sm5xK': {longURL: 'http://www.google.com', userID: 'testing'},
-};
 
 // ### Middleware ###
 // converts post buffer from client into string we can read
@@ -34,8 +31,10 @@ app.get('/urls.json', (req, res) => {
 
 // ### Real views below ###
 app.get('/urls', (req, res) => {
+  // filter out urls list to only show users own urls per user_id
+  const filteredURLbyID = urlsForUser(req.cookies['user_id']);
   const templateVars = {
-    urls: urlDatabase,
+    urls: filteredURLbyID,
     username: users[req.cookies['user_id']]
   };
   res.render('urls_index', templateVars);
@@ -81,10 +80,12 @@ app.get('/urls/new', (req, res) => {
 
 // shows the shortURL & longURL data
 app.get('/urls/:shortURL', (req, res) => {
+  const userCookie = req.cookies['user_id'];
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
-    username: users[req.cookies['user_id']]
+    username: users[userCookie],
+    urlsList: urlsForUser(userCookie),
   };
   res.render('urls_show', templateVars);
 });

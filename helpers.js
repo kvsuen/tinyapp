@@ -1,4 +1,5 @@
 const users = require('./users');
+const urlDatabase = require('./urlDatabase');
 
 const generateRandomString = function() {
   const result = [];
@@ -50,10 +51,24 @@ const correctPassword = function(email, password) {
   return false;
 };
 
+// generate object list of urls for specified user id
+const urlsForUser = function(id) {
+  const filteredObject = Object.keys(urlDatabase)
+    .filter(key => urlDatabase[key].userID === id)
+    .reduce((obj, key) => {
+      obj[key] = urlDatabase[key];
+      return obj;
+    }, {});
+
+  return filteredObject;
+};
+
 module.exports = {
+  users,
+  urlDatabase,
   generateRandomString,
   emailExists,
   findId,
   correctPassword,
-  users
+  urlsForUser,
 };

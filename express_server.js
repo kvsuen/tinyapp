@@ -55,15 +55,22 @@ app.post('/urls', (req, res) => {
 
 // edit longURL
 app.post('/urls/:shortURL', (req, res) => {
-  urlDatabase[req.params.shortURL].longURL = req.body.longURL;
-  res.redirect(`/urls`);
+  if (urlsForUser(req.cookies['user_id'])[req.params.shortURL]) {
+    urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+    res.redirect(`/urls`);
+  } else {
+    res.status(403).send("Not authorized to edit.");
+  }
 });
 
 // delete shortURL entry
 app.post('/urls/:shortURL/delete', (req, res) => {
-  console.log(req.params); // Log the POST request body to the console
-  delete urlDatabase[req.params.shortURL];
-  res.redirect(`/urls`);
+  if (urlsForUser(req.cookies['user_id'])[req.params.shortURL]) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect(`/urls`);
+  } else {
+    res.status(403).send("Not authorized to delete.");
+  }
 });
 
 // to create new shortURL for a longURL

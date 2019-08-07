@@ -14,8 +14,8 @@ const PORT = 8080; // default port 8080
 app.set('view engine', 'ejs');
 
 const urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com'
+  'b2xVn2': {longURL: 'http://www.lighthouselabs.ca', userID: 'testing'},
+  '9sm5xK': {longURL: 'http://www.google.com', userID: 'testing'},
 };
 
 // ### Middleware ###
@@ -46,13 +46,17 @@ app.get('/urls', (req, res) => {
 app.post('/urls', (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   const shortUrl = generateRandomString();
-  urlDatabase[shortUrl] = req.body.longURL;
+  urlDatabase[shortUrl] = {
+    longURL: req.body.longURL,
+    userID: req.cookies['user_id']
+  };
+  console.log(urlDatabase);
   res.redirect(`/urls/${shortUrl}`);
 });
 
 // edit longURL
 app.post('/urls/:shortURL', (req, res) => {
-  urlDatabase[req.params.shortURL] = req.body.longURL;
+  urlDatabase[req.params.shortURL].longURL = req.body.longURL;
   res.redirect(`/urls`);
 });
 
@@ -79,7 +83,7 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     username: users[req.cookies['user_id']]
   };
   res.render('urls_show', templateVars);
@@ -87,7 +91,7 @@ app.get('/urls/:shortURL', (req, res) => {
 
 // redirect shortURL to longURL
 app.get('/u/:shortURL', (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 

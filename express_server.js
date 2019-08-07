@@ -30,14 +30,13 @@ app.use(cookieSession({
 
 // ### Views to Render ###
 app.get('/', (req, res) => {
-  res.send('Hello!');
+  if (req.session.user_id) {
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
 });
 
-app.get('/urls.json', (req, res) => {
-  res.json(urlDatabase);
-});
-
-// ### Real views below ###
 app.get('/urls', (req, res) => {
   // filter out urls list to only show users own urls per user_id
   const filteredURLbyID = urlsForUser(req.session.user_id, urlDatabase);

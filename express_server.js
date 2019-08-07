@@ -17,18 +17,16 @@ const app = express();
 const PORT = 8080; // default port 8080
 app.set('view engine', 'ejs');
 
-// ### Middleware ###
-// converts post buffer from client into string we can read
+// ##### Middleware #####
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2'],
-
-  // Cookie Options
+  // cookie options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
-// ### Views to Render ###
+// ##### Views to Render #####
 app.get('/', (req, res) => {
   if (req.session.user_id) {
     res.redirect('/urls');
@@ -50,35 +48,19 @@ app.get('/urls', (req, res) => {
 // receieve post data from submit button
 // generate new shortURL and redirect to show short/long URLS
 app.post('/urls', (req, res) => {
-  const shortUrl = generateRandomString();
-  urlDatabase[shortUrl] = {
-    longURL: req.body.longURL,
-    userID: req.session.user_id
-  };
-  res.redirect(`/urls/${shortUrl}`);
-});
-
-// edit longURL
-app.post('/urls/:shortURL', (req, res) => {
-  if (urlsForUser(req.session.user_id, urlDatabase)[req.params.shortURL]) {
-    urlDatabase[req.params.shortURL].longURL = req.body.longURL;
-    res.redirect(`/urls`);
+  if (req.session.user_id) {
+    const shortUrl = generateRandomString();
+    urlDatabase[shortUrl] = {
+      longURL: req.body.longURL,
+      userID: req.session.user_id
+    };
+    res.redirect(`/urls/${shortUrl}`);
   } else {
     res.status(403).send("Not authorized to edit.");
   }
 });
 
-// delete shortURL entry
-app.post('/urls/:shortURL/delete', (req, res) => {
-  if (urlsForUser(req.session.user_id, urlDatabase)[req.params.shortURL]) {
-    delete urlDatabase[req.params.shortURL];
-    res.redirect(`/urls`);
-  } else {
-    res.status(403).send("Not authorized to delete.");
-  }
-});
-
-// to create new shortURL for a longURL
+// route to create new shortURL for a longURL
 app.get('/urls/new', (req, res) => {
   const templateVars = {
     username: users[req.session.user_id]
@@ -102,14 +84,38 @@ app.get('/urls/:shortURL', (req, res) => {
     };
     res.render('urls_show', templateVars);
   } else {
-    res.status(403).send("Error! This shortened url does not exist.");
+    res.status(404).send("Error! This shortened url does not exist.");
   }
 });
 
 // redirect shortURL to longURL
 app.get('/u/:shortURL', (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  if (Object.keys(urlDatabase).includes(req.params.shortURL)) {
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(longURL);
+  } else {
+    res.status(404).send("Error! This shortened url does not exist.");
+  }
+});
+
+// edit longURL
+app.post('/urls/:shortURL', (req, res) => {
+  if (urlsForUser(req.session.user_id, urlDatabase)[req.params.shortURL]) {
+    urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+    res.redirect(`/urls`);
+  } else {
+    res.status(403).send("Not authorized to edit.");
+  }
+});
+
+// delete shortURL entry
+app.post('/urls/:shortURL/delete', (req, res) => {
+  if (urlsForUser(req.session.user_id, urlDatabase)[req.params.shortURL]) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect(`/urls`);
+  } else {
+    res.status(403).send("Not authorized to delete.");
+  }
 });
 
 // register page
@@ -175,7 +181,7 @@ app.post('/logout', (req, res) => {
   res.redirect('/urls');
 });
 
-// ### Server listen ###
+// ##### Server listen #####
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });

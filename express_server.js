@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session')
 const bcrypt = require('bcrypt');
 const {
   users,
@@ -133,7 +134,6 @@ app.post('/register', (req, res) => {
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10)
     };
-    console.log(users[randomId]);
     res.cookie('user_id', randomId);
     res.redirect('/urls');
   }
@@ -150,9 +150,9 @@ app.get('/login', (req, res) => {
 // login handler
 app.post('/login', (req, res) => {
   if (
-    req.body.email === '' ||
-    req.body.password === '' ||
-    !emailExists(req.body.email)
+    req.body.email === ''
+    || req.body.password === ''
+    || !emailExists(req.body.email)
   ) {
     res.status(403).send('Uh oh, something went wrong, try again.');
   } else if (emailExists(req.body.email)) {

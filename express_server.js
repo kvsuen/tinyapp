@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 const {
   users,
   urlDatabase,
@@ -130,8 +131,9 @@ app.post('/register', (req, res) => {
     users[randomId] = {
       id: randomId,
       email: req.body.email,
-      password: req.body.password
+      password: bcrypt.hashSync(req.body.password, 10)
     };
+    console.log(users[randomId]);
     res.cookie('user_id', randomId);
     res.redirect('/urls');
   }

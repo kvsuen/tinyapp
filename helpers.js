@@ -1,5 +1,6 @@
 const users = require('./users');
 const urlDatabase = require('./urlDatabase');
+const bcrypt = require('bcrypt');
 
 const generateRandomString = function() {
   const result = [];
@@ -45,7 +46,7 @@ const findId = function(email) {
 
 // helper function to check if password is correct
 const correctPassword = function(email, password) {
-  if (users[findId(email)].password === password) {
+  if (bcrypt.compareSync(password, users[findId(email)].password)) {
     return true;
   }
   return false;

@@ -51,12 +51,12 @@ app.get('/urls', (req, res) => {
 app.post('/urls', (req, res) => {
   // check if user is logged in
   if (req.session.user_id) {
-    const shortUrl = generateRandomString();
-    urlDatabase[shortUrl] = {
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = {
       longURL: req.body.longURL,
       userID: req.session.user_id
     };
-    res.redirect(`/urls/${shortUrl}`);
+    res.redirect(`/urls/${shortURL}`);
   } else {
     res.status(403).send("Not authorized to edit.");
   }

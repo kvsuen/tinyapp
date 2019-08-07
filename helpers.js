@@ -9,13 +9,13 @@ const generateRandomString = function() {
     const randomNumCase = Math.floor(Math.random() * 2);
 
     let char = keys[randomNum];
-    if (typeof char === "string" && randomNumCase === 1) {
+    if (typeof char === 'string' && randomNumCase === 1) {
       char = char.toUpperCase();
     }
     result.push(char);
   }
 
-  return result.join("");
+  return result.join('');
 };
 
 // helper function to help check duplicate emails in registration

@@ -32,7 +32,7 @@ const emailExists = function(email, users) {
 };
 
 // helper function to find id of user depending on email
-const findUserId = function(email, users) {
+const getUserByEmail = function(email, users) {
   for (const user in users) {
     if (users.hasOwnProperty(user)) {
       if (Object.values(users[user]).includes(email)) {
@@ -45,7 +45,7 @@ const findUserId = function(email, users) {
 
 // helper function to check if password is correct
 const correctPassword = function(email, password, users) {
-  if (bcrypt.compareSync(password, users[findUserId(email, users)].password)) {
+  if (bcrypt.compareSync(password, users[getUserByEmail(email, users)].password)) {
     return true;
   }
   return false;
@@ -66,7 +66,7 @@ const urlsForUser = function(id, database) {
 module.exports = {
   generateRandomString,
   emailExists,
-  findUserId,
+  getUserByEmail,
   correctPassword,
   urlsForUser,
 };

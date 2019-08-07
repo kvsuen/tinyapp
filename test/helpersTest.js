@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 const bcrypt = require('bcrypt');
-const { findUserId, emailExists, correctPassword, urlsForUser } = require('../helpers.js');
+const { getUserByEmail, emailExists, correctPassword, urlsForUser } = require('../helpers.js');
 
 const testUsers = {
   userRandomID: {
@@ -23,17 +23,17 @@ const testUrlDatabase = {
 
 describe('#testing getUserByEmail', function() {
   it('should return a user with valid email', function() {
-    const user = findUserId('user@example.com', testUsers);
+    const user = getUserByEmail('user@example.com', testUsers);
     const expectedOutput = 'userRandomID';
     assert.equal(user, expectedOutput);
   });
   it('should return undefined for an invalid email', function() {
-    const user = findUserId('test@test.com', testUsers);
+    const user = getUserByEmail('test@test.com', testUsers);
     const expectedOutput = undefined;
     assert.equal(user, expectedOutput);
   });
   it('should return undefined for an empty email', function() {
-    const user = findUserId('', testUsers);
+    const user = getUserByEmail('', testUsers);
     const expectedOutput = undefined;
     assert.equal(user, expectedOutput);
   });

@@ -6,7 +6,7 @@ const urlDatabase = require('./urlDatabase');
 const {
   generateRandomString,
   emailExists,
-  findUserId,
+  getUserByEmail,
   correctPassword,
   urlsForUser,
 } = require('./helpers');
@@ -184,7 +184,7 @@ app.post('/login', (req, res) => {
     res.status(403).send('Uh oh, something went wrong, try again.');
   } else if (emailExists(req.body.email, users)) {
     if (correctPassword(req.body.email, req.body.password, users)) {
-      req.session.user_id = findUserId(req.body.email, users);
+      req.session.user_id = getUserByEmail(req.body.email, users);
       res.redirect('/urls');
     } else {
       res.status(403).send('Wrong password.');

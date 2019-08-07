@@ -87,14 +87,18 @@ app.get('/urls/new', (req, res) => {
 
 // shows the shortURL & longURL data
 app.get('/urls/:shortURL', (req, res) => {
-  const userCookie = req.cookies['user_id'];
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    username: users[userCookie],
-    urlsList: urlsForUser(userCookie),
-  };
-  res.render('urls_show', templateVars);
+  if (Object.keys(urlDatabase).includes(req.params.shortURL)) {
+    const userCookie = req.cookies['user_id'];
+    const templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL,
+      username: users[userCookie],
+      urlsList: urlsForUser(userCookie),
+    };
+    res.render('urls_show', templateVars);
+  } else {
+    res.status(403).send("Error! This shortened url does not exist.");
+  }
 });
 
 // redirect shortURL to longURL

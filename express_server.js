@@ -28,6 +28,7 @@ app.use(cookieSession({
 
 // ##### Views to Render #####
 app.get('/', (req, res) => {
+  // check if user is logged in
   if (req.session.user_id) {
     res.redirect('/urls');
   } else {
@@ -48,6 +49,7 @@ app.get('/urls', (req, res) => {
 // receieve post data from submit button
 // generate new shortURL and redirect to show short/long URLS
 app.post('/urls', (req, res) => {
+  // check if user is logged in
   if (req.session.user_id) {
     const shortUrl = generateRandomString();
     urlDatabase[shortUrl] = {
@@ -74,6 +76,7 @@ app.get('/urls/new', (req, res) => {
 
 // shows the shortURL & longURL data
 app.get('/urls/:shortURL', (req, res) => {
+  // check if the requested :shortURL exists
   if (Object.keys(urlDatabase).includes(req.params.shortURL)) {
     const userCookie = req.session.user_id;
     const templateVars = {
@@ -90,6 +93,7 @@ app.get('/urls/:shortURL', (req, res) => {
 
 // redirect shortURL to longURL
 app.get('/u/:shortURL', (req, res) => {
+  // check if the requested :shortURL exists
   if (Object.keys(urlDatabase).includes(req.params.shortURL)) {
     const longURL = urlDatabase[req.params.shortURL].longURL;
     res.redirect(longURL);
@@ -100,6 +104,7 @@ app.get('/u/:shortURL', (req, res) => {
 
 // edit longURL
 app.post('/urls/:shortURL', (req, res) => {
+  // check if the requested :shortURL is owned by the current req.session.user_id
   if (urlsForUser(req.session.user_id, urlDatabase)[req.params.shortURL]) {
     urlDatabase[req.params.shortURL].longURL = req.body.longURL;
     res.redirect(`/urls`);
@@ -110,6 +115,7 @@ app.post('/urls/:shortURL', (req, res) => {
 
 // delete shortURL entry
 app.post('/urls/:shortURL/delete', (req, res) => {
+  // check if the requested :shortURL is owned by the current req.session.user_id
   if (urlsForUser(req.session.user_id, urlDatabase)[req.params.shortURL]) {
     delete urlDatabase[req.params.shortURL];
     res.redirect(`/urls`);

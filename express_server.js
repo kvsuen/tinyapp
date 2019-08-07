@@ -126,10 +126,15 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 // register page
 app.get('/register', (req, res) => {
-  const templateVars = {
-    username: users[req.session.user_id]
-  };
-  res.render('register', templateVars);
+  // check if user is logged in
+  if (req.session.user_id) {
+    res.redirect('/urls');
+  } else {
+    const templateVars = {
+      username: users[req.session.user_id]
+    };
+    res.render('register', templateVars);
+  }
 });
 
 // registration handler
@@ -144,23 +149,29 @@ app.post('/register', (req, res) => {
       .send('Uh oh, something went wrong with the registration, try again.');
   } else {
     const randomId = generateRandomString();
+    // add new user to database
     users[randomId] = {
       id: randomId,
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10)
     };
+    // set cookie to equal the randomId
     req.session.user_id = randomId;
-    console.log(users);
     res.redirect('/urls');
   }
 });
 
 // login page
 app.get('/login', (req, res) => {
-  const templateVars = {
-    username: users[req.session.user_id]
-  };
-  res.render('login', templateVars);
+  // check if user is logged in
+  if (req.session.user_id) {
+    res.redirect('/urls');
+  } else {
+    const templateVars = {
+      username: users[req.session.user_id]
+    };
+    res.render('login', templateVars);
+  }
 });
 
 // login handler

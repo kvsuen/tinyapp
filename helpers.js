@@ -56,6 +56,7 @@ const urlsForUser = function(id, database) {
   const filteredObject = Object.keys(database)
     .filter(key => database[key].userID === id)
     .reduce((obj, key) => {
+      // starting from empty object {}, recreate urldatabase for each key that matched userID
       obj[key] = database[key];
       return obj;
     }, {});

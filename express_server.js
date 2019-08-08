@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  // filter out urls list to only show users own urls per user_id
+  // filter out urls database to only show users own urls per user_id
   const filteredURLbyID = urlsForUser(req.session.user_id, urlDatabase);
   const templateVars = {
     urls: filteredURLbyID,
@@ -46,7 +46,7 @@ app.get('/urls', (req, res) => {
   res.render('urls_index', templateVars);
 });
 
-// receieve post data from submit button
+// receieve post data from submit new URL button
 // generate new shortURL and redirect to show short/long URLS
 app.post('/urls', (req, res) => {
   // check if user is logged in
@@ -62,7 +62,7 @@ app.post('/urls', (req, res) => {
   }
 });
 
-// route to create new shortURL for a longURL
+// route to page for creating new shortURL of a longURL
 app.get('/urls/new', (req, res) => {
   const templateVars = {
     username: users[req.session.user_id]
@@ -140,9 +140,9 @@ app.get('/register', (req, res) => {
 // registration handler
 app.post('/register', (req, res) => {
   if (
-    req.body.email === '' ||
-    req.body.password === '' ||
-    emailExists(req.body.email, users)
+    req.body.email === ''
+    || req.body.password === ''
+    || emailExists(req.body.email, users)
   ) {
     res
       .status(400)
@@ -182,7 +182,7 @@ app.post('/login', (req, res) => {
     || !emailExists(req.body.email, users)
   ) {
     res.status(403).send('Uh oh, something went wrong, try again.');
-  } else if (emailExists(req.body.email, users)) {
+  } else {
     if (correctPassword(req.body.email, req.body.password, users)) {
       req.session.user_id = getUserByEmail(req.body.email, users);
       res.redirect('/urls');
